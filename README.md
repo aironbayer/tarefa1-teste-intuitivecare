@@ -38,7 +38,7 @@ O programa vai gerar 3 arquivos:
 
 Cada arquivo CSV contém as colunas:
 ```
-DATA, REG_ANS, CD_CONTA_CONTABIL, DESCRICAO, VL_SALDO_INICIAL, VL_SALDO_FINAL
+DATA, REG_ANS, CD_CONTA_CONTABIL, DESCRICAO, VL_SALDO_INICIAL, VL_SALDO_FINAL (e não haviam as colunas de CNPJ e Razão Social. Dessa forma, optei por não incluir, mesmo que de forma fictícia, pois nas instruções das atividades não é deixado claro se era possível ou não inventar dados).
 ```
 
 ### Saída (CSV consolidado)
@@ -519,74 +519,6 @@ Se houvesse mais tempo ou recursos:
 **Problema:** Valores em formato científico (1.5E+6) não são parseados.
 
 **Solução:** Adicionar tratamento para notação científica na função `parseValor()`.
-
----
-
-## 📚 Glossário Contábil
-
-Para a entrevista, é importante conhecer estes termos:
-
-- **REG_ANS:** Código de registro da operadora na Agência Nacional de Saúde
-- **CD_CONTA_CONTABIL:** Código da conta no plano de contas contábil (ex: 3.1.2.01.01)
-- **Despesas com Eventos/Sinistros:** Pagamentos por procedimentos médicos realizados
-- **Estorno:** Cancelamento/devolução de uma despesa registrada
-- **Glosa:** Não pagamento (total ou parcial) de procedimento por não atender critérios
-- **VL_SALDO_INICIAL:** Valor no início do período
-- **VL_SALDO_FINAL:** Valor no final do período
-- **Trimestre:** Período de 3 meses (1T = Jan-Mar, 2T = Abr-Jun, etc.)
-
----
-
-## ✅ Checklist para Entrega
-
-Antes de enviar, verifique:
-
-- [ ] Código Main.java está na raiz do projeto
-- [ ] README.md está completo e bem formatado
-- [ ] Arquivo consolidado_despesas.zip foi gerado corretamente
-- [ ] Arquivo processamento.log existe e tem conteúdo
-- [ ] CSV consolidado tem ~17.000 registros
-- [ ] Todas as descrições no CSV contêm "eventos" ou "sinistros"
-- [ ] Encoding UTF-8 preservou acentos corretamente
-- [ ] Código está bem comentado
-- [ ] Trade-offs estão documentados no README
-
----
-
-## 🎤 Preparação para Entrevista Técnica
-
-### Perguntas que podem fazer e como responder:
-
-**1. "Por que você manteve valores negativos?"**
-
-*Resposta:* "Mantive valores negativos porque eles são legítimos em contabilidade. Representam estornos, ajustes contábeis retroativos ou glosas. Removê-los distorceria a realidade financeira das operadoras. Registrei no log para permitir auditoria posterior caso algum seja um erro de digitação."
-
-**2. "Como você tratou duplicatas?"**
-
-*Resposta:* "Implementei uma consolidação que mantém o registro com maior valor absoluto quando encontra a mesma chave (REG_ANS + Ano + Trimestre + CD_CONTA_CONTABIL). A justificativa é que registros com valores maiores tendem a ser mais completos ou atualizados. Usei valor absoluto para que a lógica funcionasse tanto para despesas positivas quanto para estornos negativos."
-
-**3. "Por que processamento linha a linha ao invés de carregar tudo em memória?"**
-
-*Resposta:* "Escolhi processamento streaming (linha a linha) por questões de eficiência de memória. Cada arquivo tem mais de 6.000 linhas, e carregar tudo em memória poderia causar OutOfMemoryError, especialmente se os arquivos crescerem no futuro. O trade-off é que fica ligeiramente mais lento, mas ganha em robustez e escalabilidade."
-
-**4. "Qual foi o maior desafio técnico?"**
-
-*Resposta:* "O maior desafio foi decidir a granularidade da chave de consolidação. Inicialmente considerei usar apenas REG_ANS + Ano + Trimestre, mas percebi que isso agregaria diferentes tipos de despesas (hospitalar, ambulatorial, etc.) em um único registro, perdendo informação contábil importante. Por isso incluí o CD_CONTA_CONTABIL na chave."
-
-**5. "Como você garantiu a qualidade dos dados?"**
-
-*Resposta:* "Implementei múltiplas camadas de validação: filtro por palavras-chave para garantir que são despesas com eventos, consolidação de duplicatas, log de valores suspeitos (negativos), uso de UTF-8 para preservar caracteres especiais, e geração de estatísticas para verificação manual. Tudo é registrado em log para auditoria."
-
----
-
-## 📞 Contato
-
-Em caso de dúvidas sobre este código:
-- Revise os comentários no código Main.java
-- Consulte este README completo
-- Verifique o arquivo processamento.log gerado
-
----
 
 **Desenvolvido para:** Processo Seletivo IntuitiveCare 2026
 **Data:** Janeiro 2025
